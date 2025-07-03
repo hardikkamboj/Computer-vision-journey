@@ -16,9 +16,13 @@ The statements "An obstacle to answering this question was the notorious problem
 Instead of learning the transformation from input to layer, we force the model to learn the residuals. Ie, difference between the output and input. So, if there is no or less difference between the input and output, instead of learning the identity transformation, the model will now learn zero transformation (which is easier). 
 
 ## Different types of projection shortcuts 
+![image2](images/resnet_2.png)
+In each block of resnet where skip connection is used, the final output is the block output + the block input. For the addition to take place, the block output and the block input should have same dimensions. Although, in most cases it would be the case that the shape of the output will be different than the input. Usually, the output feature map have smaller spatial dimension, but larger number of channels as compared to the input. In this case, we project the input feature maps to have same dimension as output feature maps, so that we can add them up. The paper mentions 3 ways of doing it :- 
 
-
-
+- A: (parameter free) Copy in input as it is, and add 0's in the remaining place. For example, if the input is of share (56, 56, 128) and output is of shape (28,28,256), then first the input is downsampled to (28, 28, 128), and then 0s are added to make if of the shape (28, 28, 256).
+- B: (uses parameters) If the dimensions are same, then pass it as it is. Otherwise, use 1x1 convolution to decrease the spatial size (by using stride=2), and also to increase the dimensions (by controlling the number of kernels used).
+- C: Doesn't matter is the size is equal or not, always use 1x1 colvolution.
+  
 ## Some other points - 
 
 - Unlike VGG, Resnet doesn't uses Fully connected layers at the classification end. Due to this, even Resnet has very less FLOP's as compared to VGG. 34 layered Resnet has 5 times less number of parameters as compared to VGG-19 (19 layered).
